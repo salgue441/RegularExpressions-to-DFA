@@ -16,7 +16,7 @@
 #include <memory>
 
 // Project files
-#include "node/node.cpp"
+#include "graph/graph.cpp"
 
 // Main file
 int main(const int argc, char const **argv)
@@ -28,27 +28,19 @@ int main(const int argc, char const **argv)
         return EXIT_FAILURE;
     }
 
-    // Create nodes
-    Node<int, char> node1(1);
-    Node<int, char> node2(2);
-    Node<int, char> node3(3);
+    // Graph
+    Graph<int, char> graph;
 
-    // Add edges
-    node1.add_edge(std::make_shared<Node<int, char>>(node2));
-    node1.add_edge(std::make_shared<Node<int, char>>(node3), 'A');
-    node3.add_epsilon_transition(std::make_shared<Node<int, char>>(node2));
+    auto node1 = graph.add_node(1);
+    auto node2 = graph.add_node(2);
+    auto node3 = graph.add_node(3);
 
-    // Test access methods
-    std::cout << "Data of node1: " << node1.get_data() << std::endl;
-    std::cout << "Edges of node1: " << std::endl;
+    // Add edges between the nodes
+    graph.add_edge(node1, node2);
+    graph.add_edge(node1, node3);
+    graph.add_edge(node2, node3);
 
-    const auto &edges = node1.get_edges();
-    for (const auto &entry : edges)
-    {
-        const auto &node = entry.first;
-        const auto &edge = entry.second;
-
-        std::cout << "Edge to node with data: " << node->get_data()
-                  << " with edge: " << edge << std::endl;
-    }
+    // Print the adjacency list
+    std::cout << "Graph adjacency list:\n";
+    std::cout << graph.print_adjacency_list() << std::endl;
 }
