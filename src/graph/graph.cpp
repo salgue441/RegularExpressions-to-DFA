@@ -82,6 +82,25 @@ void Graph<T, E>::add_edge(
 
 /**
  * @brief
+ * Adds an edge between two nodes
+ * @tparam T Type of the data that the node will store
+ * @tparam E Type of the edge that the node will store
+ * @param node1 First node
+ * @param node2 Second node
+ * @param symbol
+ */
+template <class T, class E>
+void Graph<T, E>::add_edge(
+    const std::shared_ptr<Node<T, E>> &node1,
+    const std::shared_ptr<Node<T, E>> &node2,
+    const E &symbol)
+{
+    node1->add_edge(node2, symbol);
+    node2->add_edge(node1, symbol);
+}
+
+/**
+ * @brief
  * Removes an edge from two nodes
  * @tparam T Type of the data that the node will store
  * @tparam E Type of the edge that the node will store

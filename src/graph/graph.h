@@ -48,6 +48,9 @@ public:
     // Methods
     void add_edge(const std::shared_ptr<Node<T, E>> &,
                   const std::shared_ptr<Node<T, E>> &);
+    void add_edge(const std::shared_ptr<Node<T, E>> &,
+                  const std::shared_ptr<Node<T, E>> &,
+                  const E &);
     void remove_edge(const std::shared_ptr<Node<T, E>> &,
                      const std::shared_ptr<Node<T, E>> &);
     std::string print_adjacency_list() const;
