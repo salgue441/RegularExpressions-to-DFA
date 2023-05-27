@@ -37,7 +37,7 @@ public:
 
     // Access Methods
     const T &get_data() const;
-    const E &get_edges() const;
+    const std::unordered_map<std::shared_ptr<Node<T, E>>, E> &get_edges() const;
 
     // Operators
     bool operator==(const Node<T, E> &) const;
@@ -45,18 +45,22 @@ public:
 
     // Modifiers
     void set_data(const T &);
-    void add_edge(const std::shared_ptr<Node<T, E>> &, const E &);
-
-    // Methods
     void add_edge(const std::shared_ptr<Node<T, E>> &);
+    void add_edge(const std::shared_ptr<Node<T, E>> &, const E &);
     void remove_edge(const std::shared_ptr<Node<T, E>> &);
 
+    // Methods
     bool has_edge(const std::shared_ptr<Node<T, E>> &) const;
     bool is_connected(const std::shared_ptr<Node<T, E>> &) const;
+    bool has_epsilon_transition(const std::shared_ptr<Node<T, E>> &) const;
+    void add_epsilon_transition(const std::shared_ptr<Node<T, E>> &);
+    void add_epsilon_transition(const std::shared_ptr<Node<T, E>> &, const E &);
+    void remove_epsilon_transition(const std::shared_ptr<Node<T, E>> &);
 
 private:
     T m_data;
     std::unordered_map<std::shared_ptr<Node<T, E>>, E> m_edges;
+    std::unordered_map<std::shared_ptr<Node<T, E>>, E> m_epsilon_transitions;
 };
 
 #endif //!  NODE_H
