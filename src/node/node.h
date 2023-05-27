@@ -17,17 +17,18 @@
 #include <unordered_map>
 #include <memory>
 
+// Class
 /**
  * @class Node
- * @brief Class that represents a node in a graph
- * @tparam T Type of the node
- * @tparam E Type of the edge
+ * @brief Class that represents a node in the graph
+ * @tparam T Type of the data that the node will store
+ * @tparam E Type of the data that the edge will store
  */
 template <class T, class E>
 class Node
 {
 public:
-    // Constructor
+    // Constructors
     Node() = default;
     Node(const T &);
 
@@ -36,27 +37,26 @@ public:
 
     // Access Methods
     const T &get_data() const;
-    const std::unordered_map<
-        std::shared_ptr<Node<T, E>>, E> &
-    get_neighbors() const;
-
-    // Modifiers
-    void set_data(const T &data);
-    void add_neighbor(const std::shared_ptr<Node<T, E>> &);
-    void add_neighbor(const std::shared_ptr<Node<T, E>> &, const E &);
+    const E &get_edges() const;
 
     // Operators
     bool operator==(const Node<T, E> &) const;
     bool operator!=(const Node<T, E> &) const;
 
+    // Modifiers
+    void set_data(const T &);
+    void add_edge(const std::shared_ptr<Node<T, E>> &, const E &);
+
     // Methods
-    bool is_neighbor(const std::shared_ptr<Node<T, E>> &) const;
-    bool is_neighbor(const T &) const;
-    bool is_neighbor(const Node<T, E> &) const;
+    void add_edge(const std::shared_ptr<Node<T, E>> &);
+    void remove_edge(const std::shared_ptr<Node<T, E>> &);
+
+    bool has_edge(const std::shared_ptr<Node<T, E>> &) const;
+    bool is_connected(const std::shared_ptr<Node<T, E>> &) const;
 
 private:
     T m_data;
-    std::unordered_map<std::shared_ptr<Node<T, E>>, E> m_neighbors;
+    std::unordered_map<std::shared_ptr<Node<T, E>>, E> m_edges;
 };
 
-#endif //! NODE_H
+#endif //!  NODE_H
