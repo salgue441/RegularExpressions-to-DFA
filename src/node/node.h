@@ -14,45 +14,49 @@
 #define NODE_H
 
 // C++ Standard Library
-#include <unordered_set>
+#include <unordered_map>
 #include <memory>
 
 /**
  * @class Node
  * @brief Class that represents a node in a graph
  * @tparam T Type of the node
+ * @tparam E Type of the edge
  */
-template <class T>
+template <class T, class E>
 class Node
 {
 public:
     // Constructor
     Node() = default;
-    Node(const T &data);
+    Node(const T &);
 
     // Destructor
     ~Node() = default;
 
     // Access Methods
-    T &get_data() const;
-    std::unordered_set<std::shared_ptr<Node<T>>> &get_neighbors() const;
+    const T &get_data() const;
+    const std::unordered_map<
+        std::shared_ptr<Node<T, E>>, E> &
+    get_neighbors() const;
 
     // Modifiers
     void set_data(const T &data);
-    void add_neighbor(const std::shared_ptr<Node<T>> &);
+    void add_neighbor(const std::shared_ptr<Node<T, E>> &);
+    void add_neighbor(const std::shared_ptr<Node<T, E>> &, const E &);
 
     // Operators
-    bool operator==(const Node<T> &) const;
-    bool operator!=(const Node<T> &) const;
+    bool operator==(const Node<T, E> &) const;
+    bool operator!=(const Node<T, E> &) const;
 
     // Methods
-    bool is_neighbor(const std::shared_ptr<Node<T>> &) const;
+    bool is_neighbor(const std::shared_ptr<Node<T, E>> &) const;
     bool is_neighbor(const T &) const;
-    bool is_neighbor(const Node<T> &) const;
+    bool is_neighbor(const Node<T, E> &) const;
 
 private:
     T m_data;
-    std::unordered_set<std::shared_ptr<Node<T>>> m_neighbors;
+    std::unordered_map<std::shared_ptr<Node<T, E>>, E> m_neighbors;
 };
 
 #endif //! NODE_H

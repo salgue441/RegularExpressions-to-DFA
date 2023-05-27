@@ -13,23 +13,45 @@
 #define GRAPH_H
 
 // C++ Standard Library
-#include <string>
-#include <string_view>
-#include <optional>
 #include <unordered_map>
-#include <unordered_set>
-#include <vector>
+#include <memory>
+
+// Project Libraries
+#include "../node/node.h"
 
 /**
  * @class graph
  * @brief Class that represents a graph
  * @tparam T Type of the nodes
+ * @tparam E Type of the edges
  */
-template <class T>
+template <class T, class E>
 class Graph
 {
+public:
+    // Constructor
+    Graph() = default;
+
+    // Destructor
+    ~Graph() = default;
+
+    // Access Methods
+    const std::unordered_map<T, std::shared_ptr<Node<T, E>>> &get_nodes() const;
+
+    // Modifiers
+    void add_node(const T &);
+    void add_edge(const T &, const T &, const E &);
+
+    // Operators
+    bool operator==(const Graph<T, E> &) const;
+    bool operator!=(const Graph<T, E> &) const;
+
+    // Methods
+    bool has_node(const T &) const;
+    bool has_edge(const T &, const T &) const;
+
 private:
-    
+    std::unordered_map<T, std::shared_ptr<Node<T, E>>> m_nodes;
 };
 
 #endif //! GRAPH_H

@@ -16,64 +16,83 @@
 // Constructor
 /**
  * @brief
- * Construct a new Node< T>:: Node object
+ * Construct a new Node< T,  E>:: Node object
  * @tparam T Type of the node
- * @param data
+ * @tparam E Type of the edge
+ * @param data Data of the node
  */
-template <class T>
-Node<T>::Node(const T &data) : m_data(data)
-{
-    this->m_neighbors = std::unordered_set<std::shared_ptr<Node<T>>>();
-}
+template <class T, class E>
+Node<T, E>::Node(const T &data) : m_data(data) {}
 
 // Access Methods
 /**
  * @brief
- * Get the data object
+ * Get the data of the node
  * @tparam T Type of the node
+ * @tparam E Type of the edge
  * @return T& Data of the node
  */
-template <class T>
-T &Node<T>::get_data() const
+template <class T, class E>
+const T &Node<T, E>::get_data() const
 {
-    return this->m_data;
+    return m_data;
 }
 
 /**
  * @brief
- * Get the neighbors object
+ * Get the neighbors of the node
  * @tparam T Type of the node
- * @return std::unordered_set<std::shared_ptr<Node<T>>>& Neighbors of the node
+ * @tparam E Type of the edge
+ * @return std::unordered_map<std::shared_ptr<Node<T>>, E>& Neighbors of the node
  */
-template <class T>
-std::unordered_set<std::shared_ptr<Node<T>>> &Node<T>::get_neighbors() const
+template <class T, class E>
+const std::unordered_map<
+    std::shared_ptr<Node<T, E>>, E> &
+Node<T, E>::get_neighbors() const
 {
-    return this->m_neighbors;
+    return m_neighbors;
 }
 
 // Modifiers
 /**
  * @brief
- * Set the data object
+ * Set the data of the node
  * @tparam T Type of the node
+ * @tparam E Type of the edge
  * @param data Data of the node
  */
-template <class T>
-void Node<T>::set_data(const T &data)
+template <class T, class E>
+void Node<T, E>::set_data(const T &data)
 {
-    this->m_data = data;
+    m_data = data;
 }
 
 /**
  * @brief
  * Add a neighbor to the node
  * @tparam T Type of the node
+ * @tparam E Type of the edge
  * @param neighbor Neighbor to add
  */
-template <class T>
-void Node<T>::add_neighbor(const std::shared_ptr<Node<T>> &neighbor)
+template <class T, class E>
+void Node<T, E>::add_neighbor(const std::shared_ptr<Node<T, E>> &neighbor)
 {
-    this->m_neighbors.insert(neighbor);
+    m_neighbors.at(neighbor) = E();
+}
+
+/**
+ * @brief
+ * Add a neighbor to the node
+ * @tparam T Type of the node
+ * @tparam E Type of the edge
+ * @param neighbor Neighbor to add
+ * @param edge Edge to add
+ */
+template <class T, class E>
+void Node<T, E>::add_neighbor(
+    const std::shared_ptr<Node<T, E>> &neighbor, const E &edge)
+{
+    m_neighbors.at(neighbor) = edge;
 }
 
 // Operators
@@ -81,58 +100,62 @@ void Node<T>::add_neighbor(const std::shared_ptr<Node<T>> &neighbor)
  * @brief
  * Compare two nodes
  * @tparam T Type of the node
+ * @tparam E Type of the edge
  * @param other Node to compare
  * @return true If the nodes are equal
  * @return false If the nodes are not equal
  */
-template <class T>
-bool Node<T>::operator==(const Node<T> &other) const
+template <class T, class E>
+bool Node<T, E>::operator==(const Node<T, E> &other) const
 {
-    return this->m_data == other.m_data;
+    return m_data == other.m_data;
 }
 
 /**
  * @brief
  * Compare two nodes
  * @tparam T Type of the node
+ * @tparam E Type of the edge
  * @param other Node to compare
  * @return true If the nodes are not equal
  * @return false If the nodes are equal
  */
-template <class T>
-bool Node<T>::operator!=(const Node<T> &other) const
+template <class T, class E>
+bool Node<T, E>::operator!=(const Node<T, E> &other) const
 {
-    return this->m_data != other.m_data;
+    return m_data != other.m_data;
 }
 
 // Methods
 /**
  * @brief
- * Check if a node is a neighbor
+ * Check if a node is a neighbor of the current node
  * @tparam T Type of the node
+ * @tparam E Type of the edge
  * @param neighbor Node to check
  * @return true If the node is a neighbor
  * @return false If the node is not a neighbor
  */
-template <class T>
-bool Node<T>::is_neighbor(const std::shared_ptr<Node<T>> &neighbor) const
+template <class T, class E>
+bool Node<T, E>::is_neighbor(const std::shared_ptr<Node<T, E>> &neighbor) const
 {
-    return this->m_neighbors.find(neighbor) != this->m_neighbors.end();
+    return m_neighbors.find(neighbor) != m_neighbors.end();
 }
 
 /**
  * @brief
- * Check if a node is a neighbor
+ * Check if a node is a neighbor of the current node
  * @tparam T Type of the node
+ * @tparam E Type of the edge
  * @param data Data of the node to check
  * @return true If the node is a neighbor
  * @return false If the node is not a neighbor
  */
-template <class T>
-bool Node<T>::is_neighbor(const T &data) const
+template <class T, class E>
+bool Node<T, E>::is_neighbor(const T &data) const
 {
-    for (auto neighbor : this->m_neighbors)
-        if (neighbor->get_data() == data)
+    for (const auto &neighbor : m_neighbors)
+        if (neighbor.first->get_data() == data)
             return true;
 
     return false;
@@ -140,14 +163,15 @@ bool Node<T>::is_neighbor(const T &data) const
 
 /**
  * @brief
- * Check if a node is a neighbor
+ * Check if the node is a neighbor of the current node
  * @tparam T Type of the node
+ * @tparam E Type of the edge
  * @param node Node to check
  * @return true If the node is a neighbor
  * @return false If the node is not a neighbor
  */
-template <class T>
-bool Node<T>::is_neighbor(const Node<T> &node) const
+template <class T, class E>
+bool Node<T, E>::is_neighbor(const Node<T, E> &node) const
 {
-    return this->is_neighbor(node.get_data());
+    return is_neighbor(node.get_data());
 }
