@@ -116,7 +116,8 @@ void NFA::build_from_regex(const std::string &regex)
 
         else if (character == '|' || character == '.')
         {
-            while (!operators.empty() && operators.top() != '(' && precedence(operators.top()) >= precedence(character))
+            while (!operators.empty() && operators.top() != '(' &&
+                   precedence(operators.top()) >= precedence(character))
                 process_operator(operators.top());
 
             operators.push(character);
@@ -171,6 +172,21 @@ void NFA::process_character(char character)
                 current_nodes.insert(edge.first);
         }
     }
+
+    if (current_nodes.empty())
+    {
+        m_start_node = std::make_shared<Node<int, char>>(0);
+        m_end_node = std::make_shared<Node<int, char>>(1);
+
+        m_start_node->add_edge(m_end_node, character);
+
+        m_graph.add_node(m_start_node);
+        m_graph.add_node(m_end_node);
+    }
+
+    else
+        for (const auto &node : current_nodes)
+            node->add_edge(m_end_node, character);
 }
 
 /**
@@ -213,9 +229,7 @@ void NFA::concatenate()
         auto second_last_node = current_nodes.back();
         current_nodes.pop_back();
 
-        second_last_node->add_edge(last_node, '\0');
-
-        current_nodes.push_back(second_last_node);
+        last_node->add_edge(second_last_node, '\0');
         current_nodes.push_back(last_node);
 
         m_graph.set_nodes(current_nodes);

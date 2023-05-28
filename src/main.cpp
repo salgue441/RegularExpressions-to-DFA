@@ -46,6 +46,6 @@ int main(const int argc, char const **argv)
     auto nfa = std::make_shared<NFA>();
     nfa->build_from_regex(regex);
 
-    std::cout << "Adjacency Matrix:" << std::endl;
+    std::cout << "NFA Adjacency Matrix:" << std::endl;
     std::cout << nfa->adjacency_matrix() << std::endl;
 }

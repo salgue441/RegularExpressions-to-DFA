@@ -75,6 +75,23 @@ std::shared_ptr<Node<T, E>> Graph<T, E>::add_node(const T &data)
 
 /**
  * @brief
+ * Adds a node to the graph
+ * @tparam T Type of the data that the node will store
+ * @tparam E Type of the data that the edge will store
+ * @param node Node that will be added
+ * @return std::shared_ptr<Node<T, E>> Node that was added
+ */
+template <class T, class E>
+std::shared_ptr<Node<T, E>> Graph<T, E>::add_node(
+    const std::shared_ptr<Node<T, E>> &node)
+{
+    m_nodes.push_back(node);
+
+    return node;
+}
+
+/**
+ * @brief
  * Remove a node from the graph
  * @tparam T Type of the data that the node will store
  * @tparam E Type of the data that the edge will store
@@ -146,7 +163,8 @@ void Graph<T, E>::remove_edge(
 
 /**
  * @brief
- * Prints the graph in adjacency list\
+ * Prints the graph in adjacency list fornat. The format is as follows:
+ * 1: 2, 3, 4
  * @tparam T Type of the data that the node will store
  * @tparam E Type of the edge that the node will store
  * @return adjacency_list
@@ -154,12 +172,32 @@ void Graph<T, E>::remove_edge(
 template <class T, class E>
 std::string Graph<T, E>::print_adjacency_list() const
 {
-    std::string adjacency_list;
+    std::string adjacencyList;
 
     for (const auto &node : m_nodes)
-        adjacency_list += print_node_adjacency_list(node) + '\n';
+    {
+        adjacencyList += "Node " + std::to_string(node->get_data()) + ": ";
 
-    return adjacency_list;
+        const auto &edges = node->get_edges();
+
+        if (edges.empty())
+        {
+            adjacencyList += "No outgoing edges";
+        }
+        else
+        {
+            for (const auto &entry : edges)
+            {
+                const auto &connectedNode = entry.first;
+                const auto &edgeData = entry.second;
+                adjacencyList += "(" + std::to_string(connectedNode->get_data()) + ", " + std::to_string(edgeData) + ") ";
+            }
+        }
+
+        adjacencyList += "\n";
+    }
+
+    return adjacencyList;
 }
 
 // Methods (private)
@@ -174,7 +212,8 @@ template <class T, class E>
 std::string Graph<T, E>::print_node_adjacency_list(
     const std::shared_ptr<Node<T, E>> &node) const
 {
-    std::string adjacencyList = std::to_string(node->get_data()) + ": ";
+    std::string adjacencyList =
+        std::to_string(node->get_data()) + ": ";
 
     const auto &edges = node->get_edges();
 

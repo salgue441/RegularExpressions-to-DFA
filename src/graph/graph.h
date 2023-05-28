@@ -47,6 +47,7 @@ public:
     // Modifiers
     void set_nodes(const std::vector<std::shared_ptr<Node<T, E>>> &);
     std::shared_ptr<Node<T, E>> add_node(const T &);
+    std::shared_ptr<Node<T, E>> add_node(const std::shared_ptr<Node<T, E>> &);
     void remove_node(const std::shared_ptr<Node<T, E>> &);
 
     // Methods
