@@ -51,6 +51,7 @@ public:
 
     // Methods
     bool has_edge(const std::shared_ptr<Node<T, E>> &) const;
+    bool has_edge(const E &) const;
     bool is_connected(const std::shared_ptr<Node<T, E>> &) const;
     bool has_epsilon_transition(const std::shared_ptr<Node<T, E>> &) const;
     void add_epsilon_transition(const std::shared_ptr<Node<T, E>> &);

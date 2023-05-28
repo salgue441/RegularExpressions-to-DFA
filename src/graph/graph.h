@@ -15,6 +15,7 @@
 
 // C++ Standard Library
 #include <vector>
+#include <vector>
 #include <memory>
 #include <string>
 
@@ -40,8 +41,11 @@ public:
 
     // Access Methods
     const std::vector<std::shared_ptr<Node<T, E>>> &get_nodes() const;
+    const std::vector<std::shared_ptr<Node<T, E>>> &get_nodes(
+        const std::shared_ptr<Node<T, E>> &) const;
 
     // Modifiers
+    void set_nodes(const std::vector<std::shared_ptr<Node<T, E>>> &);
     std::shared_ptr<Node<T, E>> add_node(const T &);
     void remove_node(const std::shared_ptr<Node<T, E>> &);
 

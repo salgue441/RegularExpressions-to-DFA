@@ -157,6 +157,25 @@ bool Node<T, E>::has_edge(const std::shared_ptr<Node<T, E>> &node) const
 
 /**
  * @brief
+ * Check if the node has an edge with another node
+ * @tparam T Type of the data that the node will store
+ * @tparam E Type of the data that the edge will store
+ * @param character Character to check if there's an edge
+ * @return true If there is an edge
+ * @return false If there is not an edge
+ */
+template <class T, class E>
+bool Node<T, E>::has_edge(const E &character) const
+{
+    for (const auto &edge : m_edges)
+        if (edge.second == character)
+            return true;
+
+    return false;
+}
+
+/**
+ * @brief
  * Checks if the node is connected to another node
  * @tparam T Type of the data that the node will store
  * @tparam E Type of the data that the edge will store

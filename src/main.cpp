@@ -16,7 +16,7 @@
 #include <memory>
 
 // Project files
-#include "graph/graph.cpp"
+#include "NFA/nfa.cpp"
 
 // Main file
 int main(const int argc, char const **argv)
@@ -28,19 +28,24 @@ int main(const int argc, char const **argv)
         return EXIT_FAILURE;
     }
 
-    // Graph
-    Graph<int, char> graph;
+    std::ifstream input_file(argv[1], std::ios::in);
+    if (!input_file)
+    {
+        std::cerr << "Error: Could not open input file: " << argv[1] << std::endl;
+        return EXIT_FAILURE;
+    }
 
-    auto node1 = graph.add_node(1);
-    auto node2 = graph.add_node(2);
-    auto node3 = graph.add_node(3);
+    std::string regex;
+    std::getline(input_file, regex);
 
-    // Add edges between the nodes
-    graph.add_edge(node1, node2);
-    graph.add_edge(node1, node3);
-    graph.add_edge(node2, node3);
+    input_file.close();
 
-    // Print the adjacency list
-    std::cout << "Graph adjacency list:\n";
-    std::cout << graph.print_adjacency_list() << std::endl;
+    std::cout << "Regex: " << regex << std::endl;
+
+    // NFA
+    auto nfa = std::make_shared<NFA>();
+    nfa->build_from_regex(regex);
+
+    std::cout << "Adjacency Matrix:" << std::endl;
+    std::cout << nfa->adjacency_matrix() << std::endl;
 }

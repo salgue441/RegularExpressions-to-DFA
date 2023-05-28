@@ -27,7 +27,35 @@ const std::vector<std::shared_ptr<Node<T, E>>> &Graph<T, E>::get_nodes() const
     return m_nodes;
 }
 
+/**
+ * @brief
+ * Get the nodes of a given node in the graph
+ * @tparam T Type of the data that the node will store
+ * @tparam E Type of the data that the edge will store
+ * @param node Node to get the nodes from
+ * @return const std::vector<std::shared_ptr<Node<T, E>>>& Nodes of the graph
+ */
+template <class T, class E>
+const std::vector<std::shared_ptr<Node<T, E>>> &Graph<T, E>::get_nodes(
+    const std::shared_ptr<Node<T, E>> &node) const
+{
+    return node->get_nodes();
+}
+
 // Modifiers
+/**
+ * @brief Sets the active nodes in the graph
+ * @tparam T Type of the data that the node will store
+ * @tparam E Type of the data that the edge will store
+ * @param nodes Active nodes to be set in the graph
+ */
+template <class T, class E>
+void Graph<T, E>::set_nodes(
+    const std::vector<std::shared_ptr<Node<T, E>>> &nodes)
+{
+    m_nodes = nodes;
+}
+
 /**
  * @brief
  * Add a node to the graph
