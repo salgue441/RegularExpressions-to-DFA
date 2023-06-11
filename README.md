@@ -1,77 +1,34 @@
-# Regular Expressions to DFA
+# Regular expression to DFA Converter
 
-## Title of the project
+This project is a Regular Expression to Deterministic Finite Automaton (DFA) Converter implemented in modern C++. It allows you to convert regular expressions into their equivalent DFAs, enabling you to perform pattern matching and recognition efficiently.
 
-### University
+## Features
 
-Instituto Tecnológico de Estudios Superiores de Monterrey, Campus Querétaro
+- Conversion of regular expressions to DFAs
+- Support for basic regular expression operators such as concatenation, union (OR),
+  Kleene star (closure), and parentheses (zero or more occurrences)
+- Handles parentheses to enfore precedence and grouping of expressions
+- Supports a variety of input symbols, including alphabets, digits, special characters,
+  and whitespace
+- Graphical visualization of the generated DFA using OpenGL and Glew
 
-### Course
+## Requirements
 
-Implementación de Métodos Computacionales.
+To build and run the Regular Expression to DFA Converter, you will need the following:
 
-| Semester | Teacher     |
-| -------- | ----------- |
-| 2023-01  | Pedro Perez |
+- C++ compiler with C++17 support (e.g. GCC 7.0+)
+- CMake 3.10+
+- OpenGL 3.3+
+- Glew 2.1.0+
 
-### Authors
+## Running the Converter
 
-| Name            | Student ID | GitHub Username                                     |
-| --------------- | ---------- | --------------------------------------------------- |
-| Carlos Salguero | A00833341  | [carlos-salguero](https://github.com/salgue441)     |
-| Diego Sandoval  | A0170      | [DiegoSandovalV](https://github.com/DiegoSandovalV) |
-
-## Table of Contents
-
-## Introduction
-
-This project is an implementation of a regular expression to DFA converter. It is written in
-modern C++ and uses the [Boost](https://www.boost.org/) library for its regular expression
-parser. The project is built using [CMake](https://cmake.org/).
-
-Uses the [Thompson's Construction](https://en.wikipedia.org/wiki/Thompson%27s_construction)
-algorithm to convert the regular expression to a non-deterministic finite automaton (NFA).
-The NFA is then converted to a DFA using the [Subset Construction](https://en.wikipedia.org/wiki/Powerset_construction)
-
-The output of the program is a [Graphviz](https://graphviz.org/) DOT file. The format
-of the output is an adjacency list representation of the DFA. This can be
-converted to an image using the `dot` command line tool.
-
-```bash
-dot -Tpng -o output.png output.dot
-```
-
-## Building
-
-To build the project, you will need to have CMake installed. You can then run the following
-commands to build the project:
+To run the converter, you can use the following commands:
 
 ```bash
 ./run.sh
 ```
 
-This will create an executable called `regex2dfa` in the `build` directory.
+## License
 
-## Usage
-
-The program takes a single argument, which is the regular expression within a file
-that you want to convert to a DFA. The program will then output the DFA to stdout.
-
-```bash
-./regex2dfa <regex_file>
-```
-
-## Example
-
-The following is an example of how to use the program. The regular expression is stored in
-a file called `regex.txt`.
-
-```bash
-./regex2dfa regex.txt
-```
-
-The contents of `regex.txt` are:
-
-```regex
-a(b|c)*d
-```
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
