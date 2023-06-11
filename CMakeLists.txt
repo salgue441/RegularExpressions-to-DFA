@@ -22,6 +22,7 @@ set(SOURCES
     src/main.cpp
 
     # Project files
+    src/node/node.cpp
 )
 
 # Executable
