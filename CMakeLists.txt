@@ -23,6 +23,7 @@ set(SOURCES
 
     # Project files
     src/node/node.cpp
+    src/graph/graph.cpp
 )
 
 # Executable

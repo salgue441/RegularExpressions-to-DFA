@@ -16,7 +16,7 @@
 #include <unordered_map>
 
 // Project files
-#include "./node/node.h"
+#include "./graph/graph.h"
 
 // Function prototypes
 std::string infix_to_postfix(const std::string &);
@@ -30,39 +30,41 @@ std::string infix_to_postfix(const std::string &);
  */
 int main(int argc, char const **argv)
 {
-    Node node1(1);
-    Node node2(2);
-    Node node3(3);
+    try
+    {
+        Graph graph;
 
-    // Add transitions
-    node1.add_transition('a', std::make_shared<Node>(node2));
-    node1.add_transition('b', std::make_shared<Node>(node3));
+        auto node1 = graph.create_node();
+        auto node2 = graph.create_node();
+        auto node3 = graph.create_node(true);
 
-    // Test get_target_id function
-    std::optional<int> targetIdA = node1.get_target_id('a');
+        graph.add_transition(node1->get_id(), 'a', node2->get_id());
+        graph.add_transition(node2->get_id(), 'b', node3->get_id());
+        graph.add_transition(node3->get_id(), 'c', node1->get_id());
 
-    if (targetIdA.has_value())
-        std::cout << "Target ID for transition 'a': "
-                  << targetIdA.value() << std::endl;
+        const auto &nodes = graph.get_nodes();
+        std::cout << "Number of nodes: " << nodes.size() << '\n';
 
-    else
-        std::cout << "Transition 'a' does not exist." << std::endl;
+        for (const auto &[id, node] : nodes)
+        {
+            std::cout << "Node " << id << ": "
+                      << (node->is_final() ? "Final" : "Not final")
+                      << std::endl;
+        }
 
-    std::optional<int> targetIdB = node1.get_target_id('b');
-    if (targetIdB.has_value())
-        std::cout << "Target ID for transition 'b': "
-                  << targetIdB.value() << std::endl;
+        std::cout << "Node 3 is final: "
+                  << (graph.is_final(node3->get_id()) ? "Yes" : "No") << std::endl;
 
-    else
-        std::cout << "Transition 'b' does not exist." << std::endl;
-
-    std::optional<int> targetIdC = node1.get_target_id('c');
-    if (targetIdC.has_value())
-        std::cout << "Target ID for transition 'c': "
-                  << targetIdC.value() << std::endl;
-
-    else
-        std::cout << "Transition 'c' does not exist." << std::endl;
+        // Test get_node method
+        const auto &target_node = graph.get_node(node1->get_id());
+        std::cout
+            << "Target node of transition from Node 1 with symbol 'a': "
+            << target_node->get_id() << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }
 
 /**
