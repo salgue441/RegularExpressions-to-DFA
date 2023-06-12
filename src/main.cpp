@@ -16,7 +16,7 @@
 #include <unordered_map>
 
 // Project files
-#include "./graph/graph.h"
+#include "./nfa/nfa.h"
 
 // Function prototypes
 std::string infix_to_postfix(const std::string &);
@@ -32,34 +32,14 @@ int main(int argc, char const **argv)
 {
     try
     {
-        Graph graph;
+        std::string postfix_regex = "ab(c+)";
+        NFA nfa(postfix_regex);
 
-        auto node1 = graph.create_node();
-        auto node2 = graph.create_node();
-        auto node3 = graph.create_node(true);
-
-        graph.add_transition(node1->get_id(), 'a', node2->get_id());
-        graph.add_transition(node2->get_id(), 'b', node3->get_id());
-        graph.add_transition(node3->get_id(), 'c', node1->get_id());
-
-        const auto &nodes = graph.get_nodes();
-        std::cout << "Number of nodes: " << nodes.size() << '\n';
-
-        for (const auto &[id, node] : nodes)
-        {
-            std::cout << "Node " << id << ": "
-                      << (node->is_final() ? "Final" : "Not final")
-                      << std::endl;
-        }
-
-        std::cout << "Node 3 is final: "
-                  << (graph.is_final(node3->get_id()) ? "Yes" : "No") << std::endl;
-
-        // Test get_node method
-        const auto &target_node = graph.get_node(node1->get_id());
-        std::cout
-            << "Target node of transition from Node 1 with symbol 'a': "
-            << target_node->get_id() << std::endl;
+        std::cout << "NFA:\n";
+        std::cout << "  Postfix regex: " << postfix_regex << '\n';
+        std::cout << "  Accepts \"ab\": " << nfa.accepts("ab") << '\n';
+        std::cout << "  Accepts \"abc\": " << nfa.accepts("abc") << '\n';
+        std::cout << "  Accepts \"abcccc\": " << nfa.accepts("abcccc") << '\n';
     }
     catch (const std::exception &e)
     {
@@ -91,18 +71,19 @@ std::string infix_to_postfix(const std::string &infix)
 
         else if (character == ')')
         {
-            while (operators.top() != '(')
+            while (!operators.empty() && operators.top() != '(')
             {
                 postfix += operators.top();
                 operators.pop();
             }
 
-            operators.pop();
+            if (!operators.empty())
+                operators.pop();
         }
 
         else
         {
-            while (!operators.empty() &&
+            while (!operators.empty() && operators.top() != '(' &&
                    precedence[operators.top()] >= precedence[character])
             {
                 postfix += operators.top();

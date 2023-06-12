@@ -49,6 +49,8 @@ public:
     bool operator!=(const Node &) const;
 
     // Methods
+    bool has_transition(const char &) const;
+    const Transition::const_iterator get_transition(const char &) const;
     std::optional<int> get_target_id(const char &) const;
 
 private:

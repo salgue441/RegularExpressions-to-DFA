@@ -121,6 +121,30 @@ bool Node::operator!=(const Node &other) const
 // Methods
 /**
  * @brief
+ * Checks if the node has a transition
+ * @param character Character that triggers the transition
+ * @return true If the node has the transition
+ * @return false If the node does not have the transition
+ */
+bool Node::has_transition(const char &character) const
+{
+    return m_transitions.find(character) != m_transitions.end();
+}
+
+/**
+ * @brief
+ * Returns the transition
+ * @param character Character that triggers the transition
+ * @return const Transition::const_iterator Transition
+ */
+const Node::Transition::const_iterator Node::get_transition(
+    const char &character) const
+{
+    return m_transitions.find(character);
+}
+
+/**
+ * @brief
  * Returns the target node's ID
  * @param character Character that triggers the transition
  * @return std::optional<int> Target node's ID

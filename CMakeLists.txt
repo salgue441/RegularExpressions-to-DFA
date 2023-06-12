@@ -24,6 +24,7 @@ set(SOURCES
     # Project files
     src/node/node.cpp
     src/graph/graph.cpp
+    src/nfa/nfa.cpp
 )
 
 # Executable

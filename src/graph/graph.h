@@ -38,12 +38,19 @@ public:
 
     // Mutators
     void add_transition(const int &, const char &, const int &);
+    void set_nodes(const std::unordered_map<int, std::shared_ptr<Node>> &);
+    void set_nodes(const int &, const std::shared_ptr<Node> &);
 
     // Methods
     bool is_final(const int &) const;
     const std::shared_ptr<Node> get_node(const int &) const;
+    const std::shared_ptr<Node> get_final_node() const;
+    void set_final_node(const int &);
+    void set_final_node(const std::shared_ptr<Node> &);
     std::shared_ptr<Node> create_node(const bool &is_final = false);
     std::shared_ptr<Node> create_node(const int &, bool is_final = false);
+    void merge_graphs(const std::shared_ptr<Graph> &,
+                      const std::shared_ptr<Graph> &);
 
 private:
     std::unordered_map<int, std::shared_ptr<Node>> m_nodes;
