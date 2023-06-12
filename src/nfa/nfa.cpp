@@ -82,13 +82,15 @@ bool NFA::dfs(const std::shared_ptr<Node> &node,
             return true;
     }
 
-    // Handle the '*' operator
-    for (const auto &transition : node->get_transitions())
+    if (index < str.length())
     {
-        if (transition.first == EPSILON)
+        for (const auto &transition : node->get_transitions())
         {
-            if (dfs(transition.second, str, index))
-                return true;
+            if (transition.first == EPSILON)
+            {
+                if (dfs(transition.second, str, index))
+                    return true;
+            }
         }
     }
 
@@ -116,76 +118,65 @@ void NFA::build_nfa(const std::string &postfix_regex)
 {
     std::stack<std::shared_ptr<Graph>> graph_stack;
 
-    for (const char &character : postfix_regex)
+    for (const auto &character : postfix_regex)
     {
-        if (!is_operator(character))
-        {
-            auto graph = std::make_shared<Graph>();
-            auto start_node = graph->create_node();
-            auto final_node = graph->create_node(true);
-
-            start_node->add_transition(character, final_node);
-
-            graph_stack.push(graph);
-        }
-        else
+        if (is_operator(character))
         {
             if (character == '*')
             {
-                auto graph = std::make_shared<Graph>();
-                auto start_node = graph->create_node();
-                auto final_node = graph->create_node(true);
-
-                auto previous_graph = graph_stack.top();
+                auto graph = graph_stack.top();
                 graph_stack.pop();
 
-                start_node->add_transition(EPSILON, previous_graph->get_node(1));
+                auto new_graph = std::make_shared<Graph>();
+                auto start_node = new_graph->create_node();
+                auto final_node = new_graph->create_node(true);
+
                 start_node->add_transition(EPSILON, final_node);
+                start_node->add_transition(EPSILON, graph->get_node(1));
 
-                previous_graph->get_final_node()->add_transition(EPSILON, previous_graph->get_node(1));
-                previous_graph->get_final_node()->add_transition(EPSILON, final_node);
+                graph->get_final_node()->add_transition(EPSILON, final_node);
+                graph->get_final_node()
+                    ->add_transition(EPSILON, graph->get_node(1));
 
-                graph_stack.push(graph);
+                new_graph->merge_graphs(graph, new_graph);
+
+                graph_stack.push(new_graph);
             }
             else if (character == '|')
             {
-                auto graph = std::make_shared<Graph>();
-                auto start_node = graph->create_node();
-                auto final_node = graph->create_node(true);
-
-                auto previous_graph_2 = graph_stack.top();
+                auto graph1 = graph_stack.top();
                 graph_stack.pop();
 
-                auto previous_graph_1 = graph_stack.top();
+                auto graph2 = graph_stack.top();
                 graph_stack.pop();
 
-                start_node->add_transition(EPSILON, previous_graph_1->get_node(1));
-                start_node->add_transition(EPSILON, previous_graph_2->get_node(1));
-
-                previous_graph_1->get_final_node()->add_transition(EPSILON, final_node);
-                previous_graph_2->get_final_node()->add_transition(EPSILON, final_node);
-
-                graph_stack.push(graph);
+                auto new_graph = std::make_shared<Graph>();
+                new_graph->merge_graphs(graph1, graph2);
+                graph_stack.push(new_graph);
             }
             else if (character == '.')
             {
-                auto graph = std::make_shared<Graph>();
-
-                auto previous_graph_2 = graph_stack.top();
+                auto graph1 = graph_stack.top();
                 graph_stack.pop();
 
-                auto previous_graph_1 = graph_stack.top();
+                auto graph2 = graph_stack.top();
                 graph_stack.pop();
 
-                graph->merge_graphs(previous_graph_1, previous_graph_2);
+                auto new_graph = std::make_shared<Graph>();
+                new_graph->merge_graphs(graph1, graph2);
 
-                graph_stack.push(graph);
+                graph_stack.push(new_graph);
             }
+        }
+        else
+        {
+            auto new_graph = std::make_shared<Graph>();
+            new_graph->create_node();
+            new_graph->create_node();
+            new_graph->add_transition(1, character, 2);
+            graph_stack.push(new_graph);
         }
     }
 
-    if (!graph_stack.empty())
-        m_graph = graph_stack.top();
-    else
-        throw std::runtime_error("Invalid regular expression");
+    m_graph = graph_stack.top();
 }
