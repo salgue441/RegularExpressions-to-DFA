@@ -1,210 +1,386 @@
 /**
  * @file graph.cpp
  * @author Carlos Salguero
- * @brief Implementation of the graph class
+ * @brief Implementation of Graph class
  * @version 0.1
- * @date 2023-06-11
+ * @date 2023-06-26
  *
  * @copyright Copyright (c) 2023
  *
  */
+// C++ Standard Libraries
+#include <stack>
 
-// Project files
+// Project file
 #include "graph.h"
+
+// Constructors
+/**
+ * @brief
+ * Construct a new Graph:: Graph object
+ */
+Graph::Graph()
+{
+    this->m_next = 0;
+}
+
+/**
+ * @brief
+ * Construct a new Graph:: Graph object
+ * @param other Graph to be copied
+ */
+Graph::Graph(const Graph &other)
+{
+    this->m_start = other.m_start;
+    this->m_next = other.m_next;
+    this->m_final = other.m_final;
+    this->m_vertexes = other.m_vertexes;
+    this->m_edges = other.m_edges;
+}
 
 // Access Methods
 /**
  * @brief
- * Get the nodes object
- * @return const std::unordered_map<int, std::shared_ptr<Node>>&
- *         Nodes in the graph
+ * Get the weight of an edge
+ * @param from Origin vertex
+ * @param to Destination vertex
+ * @return const weight of the edge
+ * @return const std::optional<char> no_weight if the edge does not exist
  */
-const std::unordered_map<int, std::shared_ptr<Node>> &Graph::get_nodes() const
+const std::optional<char> &Graph::get_weight(
+    const int &from, const int &to) const
 {
-    if (m_nodes.empty())
-        throw std::runtime_error("The graph is empty");
+    auto it = this->m_edges.find(from);
 
-    return m_nodes;
-}
+    if (it != this->m_edges.end())
+    {
+        const std::map<char, std::set<int>> &edges_map = it->second;
 
-// Mutators
-/**
- * @brief
- * Add a transition to the graph
- * @param from Node's ID where the transition starts
- * @param symbol Symbol that triggers the transition
- * @param to Node's ID where the transition ends
- */
-void Graph::add_transition(const int &from, const char &symbol, const int &to)
-{
-    if (m_nodes.find(from) == m_nodes.end())
-        throw std::runtime_error(
-            "The node " + std::to_string(from) + " does not exist");
+        for (const auto &weight_it : edges_map)
+        {
+            const std::set<int> &destinations = weight_it.second;
 
-    if (m_nodes.find(to) == m_nodes.end())
-        throw std::runtime_error(
-            "The node " + std::to_string(to) + " does not exist");
+            if (destinations.count(to) > 0)
+            {
+                static const std::optional<char> weight(weight_it.first);
+                return weight;
+            }
+        }
+    }
 
-    m_nodes[from]->add_transition(symbol, m_nodes[to]);
-}
-
-/**
- * @brief
- * Set the nodes object
- * @param nodes Nodes to be added
- */
-void Graph::set_nodes(
-    const std::unordered_map<int, std::shared_ptr<Node>> &nodes)
-{
-    if (nodes.empty())
-        throw std::runtime_error("The nodes are empty");
-
-    m_nodes = nodes;
+    static const std::optional<char> no_weight;
+    return no_weight;
 }
 
 /**
  * @brief
- * Set the nodes object
- * @param id Node's ID
- * @param node Node to be added
+ * Get the start vertex
+ * @return const int& start vertex
  */
-void Graph::set_nodes(const int &id, const std::shared_ptr<Node> &node)
+const int &Graph::get_start() const
 {
-    if (m_nodes.find(id) == m_nodes.end())
-        throw std::runtime_error(
-            "The node " + std::to_string(id) + " does not exist");
-
-    m_nodes[id] = node;
-}
-
-// Methods
-/**
- * @brief
- * Check if a node is final
- * @param id Node's ID
- * @return true If the node is final
- * @return false If the node is not final
- */
-bool Graph::is_final(const int &id) const
-{
-    if (m_nodes.find(id) == m_nodes.end())
-        throw std::runtime_error(
-            "The node " + std::to_string(id) + " does not exist");
-
-    return m_nodes.at(id)->is_final();
+    return this->m_start;
 }
 
 /**
  * @brief
- * Get a node from the graph
- * @param id Node's ID
- * @return const std::shared_ptr<Node> Target node from the graph
+ * Get the next vertex
+ * @return const int& next vertex
  */
-const std::shared_ptr<Node> Graph::get_node(const int &id) const
+const int &Graph::get_next() const
 {
-    if (m_nodes.find(id) == m_nodes.end())
-        throw std::runtime_error(
-            "The node " + std::to_string(id) + " does not exist");
-
-    return m_nodes.at(id);
+    return this->m_next;
 }
 
 /**
  * @brief
- * Gets the final node of the graph
- * @return const std::shared_ptr<Node> Final node of the graph
+ * Get the final vertexes
+ * @return const std::set<int>& final vertexes
  */
-const std::shared_ptr<Node> Graph::get_final_node() const
+const std::set<int> &Graph::get_final() const
 {
-    for (const auto &node : m_nodes)
-        if (node.second->is_final())
-            return node.second;
-
-    throw std::runtime_error("The graph does not have a final node");
+    return this->m_final;
 }
 
 /**
  * @brief
- * Sets the final node of the graph
- * @param id Node's ID
+ * Get the vertexes
+ * @return const std::set<int>& vertexes
  */
-void Graph::set_final_node(const int &id)
+const std::set<int> &Graph::get_vertexes() const
 {
-    if (m_nodes.find(id) == m_nodes.end())
-        throw std::runtime_error(
-            "The node " + std::to_string(id) + " does not exist");
-
-    m_nodes.at(id)->set_final(true);
+    return this->m_vertexes;
 }
 
 /**
  * @brief
- * Sets the final node of the graph
- * @param node Node to be set as final
+ * Get the edges
+ * @return const std::map<int, std::map<char, std::set<int>>>& edges
  */
-void Graph::set_final_node(const std::shared_ptr<Node> &node)
+const std::map<int, std::map<char, std::set<int>>> &Graph::get_edges() const
 {
-    if (m_nodes.find(node->get_id()) == m_nodes.end())
-        throw std::runtime_error(
-            "The node " + std::to_string(node->get_id()) + " does not exist");
+    return this->m_edges;
+}
 
-    m_nodes.at(node->get_id())->set_final(true);
+// Mutator Methods
+/**
+ * @brief
+ * Set the start vertex
+ * @param start start vertex
+ */
+void Graph::set_start(const int &start)
+{
+    this->m_start = start;
 }
 
 /**
  * @brief
- * Create a node in the graph
- * @param is_final Indicates if the node is final
- * @return std::shared_ptr<Node> Created node
+ * Add a final vertex
+ * @param final final vertex
  */
-std::shared_ptr<Node> Graph::create_node(const bool &is_final)
+void Graph::add_final(const int &final)
 {
-    auto node = std::make_shared<Node>(m_next_id, is_final);
-    m_nodes[m_next_id] = node;
-    m_next_id++;
-
-    return node;
+    this->m_final.insert(final);
 }
 
 /**
  * @brief
- * Create a node in the graph
- * @param id Node's ID
- * @param is_final Indicates if the node is final
- * @return std::shared_ptr<Node> Created node
+ * Adds a final vertex
+ * @param final final vertex
  */
-std::shared_ptr<Node> Graph::create_node(const int &id, bool is_final)
+void Graph::add_final(const std::set<int> &final)
 {
-    if (m_nodes.find(id) != m_nodes.end())
-        throw std::runtime_error(
-            "The node " + std::to_string(id) + " already exists");
+    this->m_final.insert(final.begin(), final.end());
+}
 
-    auto node = std::make_shared<Node>(id, is_final);
-    m_nodes[id] = node;
+// Methods (Public)
+/**
+ * @brief
+ * Check if the graph is empty
+ * @return true if the graph is empty
+ * @return false if the graph is not empty
+ */
+bool Graph::is_empty() const
+{
+    auto it = this->m_edges.find(this->m_start);
 
-    if (id >= m_next_id)
-        m_next_id = id + 1;
+    if (it != this->m_edges.end())
+    {
+        const std::map<char, std::set<int>> &edges_map = it->second;
 
-    return node;
+        for (const auto &weight_it : edges_map)
+        {
+            const std::set<int> &destinations = weight_it.second;
+
+            if (!destinations.empty())
+                return false;
+        }
+    }
+
+    return true;
 }
 
 /**
  * @brief
- * Merges two graphs
- * @param first_graph First graph to be merged
- * @param second_graph Second graph to be merged
+ * Checks if the value is final
+ * @param value value to be checked
+ * @return true if the value is final
+ * @return false if the value is not final
  */
-void Graph::merge_graphs(const std::shared_ptr<Graph> &first_graph, const std::shared_ptr<Graph> &second_graph)
+bool Graph::is_final(const int &value) const
 {
-    if (first_graph->m_nodes.empty())
-        throw std::runtime_error("The first graph is empty");
+    return this->m_final.count(value) > 0;
+}
 
-    if (second_graph->m_nodes.empty())
-        throw std::runtime_error("The second graph is empty");
+/**
+ * @brief
+ * Checks if the graph contains a specific vertex
+ * @param vertex vertex to be checked
+ * @return true if the graph contains the vertex
+ * @return false if the graph does not contain the vertex
+ */
+bool Graph::contains_vertex(const int &vertex) const
+{
+    return this->m_vertexes.count(vertex) > 0;
+}
 
-    for (const auto &node : first_graph->m_nodes)
-        m_nodes[node.first] = node.second;
+/**
+ * @brief
+ * Adds an edge to the graph
+ * @param from Origin vertex
+ * @param value Value of the edge
+ * @param to Destination vertex
+ */
+void Graph::add_edge(const int &from, const char &value, const int &to)
+{
+    this->m_vertexes.insert(from);
+    this->m_vertexes.insert(to);
 
-    for (const auto &node : second_graph->m_nodes)
-        m_nodes[node.first] = node.second;
+    auto it = this->m_edges.find(from);
+
+    if (it != this->m_edges.end())
+    {
+        std::map<char, std::set<int>> &edges_map = it->second;
+        auto weight_it = edges_map.find(value);
+
+        if (weight_it != edges_map.end())
+        {
+            std::set<int> &destinations = weight_it->second;
+            destinations.insert(to);
+        }
+
+        else
+        {
+            std::set<int> destinations;
+            destinations.insert(to);
+            edges_map.insert(std::make_pair(value, destinations));
+        }
+    }
+
+    else
+    {
+        std::map<char, std::set<int>> edges_map;
+        std::set<int> destinations;
+
+        destinations.insert(to);
+        edges_map.insert(std::make_pair(value, destinations));
+
+        this->m_edges.insert(std::make_pair(from, edges_map));
+    }
+}
+
+/**
+ * @brief
+ * Creates a new vertex
+ * @return int new vertex
+ */
+int Graph::create_vertex()
+{
+    int vertex = this->m_next;
+    this->m_next++;
+
+    return vertex;
+}
+
+/**
+ * @brief
+ * Prints the graph in string format
+ */
+std::string Graph::to_string() const
+{
+    std::string str = "";
+
+    str += "Start: " + std::to_string(this->m_start) + "\n";
+    str += "Final: ";
+
+    for (const int &final : this->m_final)
+        str += std::to_string(final) + " ";
+
+    str += "\n";
+
+    for (const auto &it : this->m_edges)
+    {
+        const std::map<char, std::set<int>> &edges_map = it.second;
+
+        for (const auto &weight_it : edges_map)
+        {
+            const std::set<int> &destinations = weight_it.second;
+
+            for (const int &destination : destinations)
+                str += std::to_string(it.first) + " " + weight_it.first + " " + std::to_string(destination) + "\n";
+        }
+    }
+
+    return str;
+}
+
+/**
+ * @brief
+ * Handles the e closure of a vertex
+ * @param vertex vertex to be handled
+ * @return std::set<int> e closure of the vertex
+ */
+std::set<int> Graph::e_closure(const int &vertex) const
+{
+    std::set<int> closure;
+    std::stack<int> stack;
+
+    stack.push(vertex);
+
+    while (!stack.empty())
+    {
+        int current = stack.top();
+        stack.pop();
+
+        closure.insert(current);
+
+        auto it = this->m_edges.find(current);
+
+        if (it != this->m_edges.end())
+        {
+            const std::map<char, std::set<int>> &edges_map = it->second;
+
+            for (const auto &weight_it : edges_map)
+            {
+                if (weight_it.first == 'e')
+                {
+                    const std::set<int> &destinations = weight_it.second;
+
+                    for (const int &destination : destinations)
+                    {
+                        if (closure.count(destination) == 0)
+                            stack.push(destination);
+                    }
+                }
+            }
+        }
+    }
+
+    return closure;
+}
+
+/**
+ * @brief
+ * Handles the e closure of a set of vertexes
+ * @param vertexes vertexes to be handled
+ * @return std::set<int> e closure of the vertexes
+ */
+std::set<int> Graph::e_closure(const std::set<int> &vertexes) const
+{
+    std::set<int> closure;
+
+    for (const int &vertex : vertexes)
+    {
+        std::set<int> vertex_closure = this->e_closure(vertex);
+        closure.insert(vertex_closure.begin(), vertex_closure.end());
+    }
+
+    return closure;
+}
+
+/**
+ * @brief
+ * Handles the e closure of a set of vertexes
+ * @param vertex vertex to be handled
+ * @param vertexes vertexes to be handled
+ * @return std::set<int> e closure of the vertexes
+ */
+std::set<int> Graph::e_closure(const int &vertex,
+                               const std::set<int> &vertexes) const
+{
+    std::set<int> closure = this->e_closure(vertex);
+    closure.insert(vertexes.begin(), vertexes.end());
+
+    return closure;
+}
+
+// Methods (private)
+/**
+ * @brief
+ * Adds a new vertex to the graph
+ * @param vertex vertex to be added
+ */
+void Graph::add_vertex(const int &vertex)
+{
+    this->m_vertexes.insert(vertex);
 }
