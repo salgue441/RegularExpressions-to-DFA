@@ -16,6 +16,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <memory>
 #include <vector>
 
 // Constants
@@ -57,6 +58,8 @@ public:
     void add_edge(const int &, const char &, const int &);
 
     int create_vertex();
+    std::pair<int, int> connect_graph_to_vertex(const std::shared_ptr<Graph> &,
+                                                const int &);
     std::string to_string() const;
 
     std::set<int> e_closure(const int &) const;

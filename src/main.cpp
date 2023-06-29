@@ -9,14 +9,21 @@
  *
  */
 
-// Google Test
-#include <gtest/gtest.h>
+// C++ Standard Library
+#include <iostream>
+#include <memory>
 
-// Tests
-#include "../tests/graph.test.h"
+// Project files
+#include "Graph/graph.h"
+#include "automata/automata.h"
 
 int main(int argc, char **argv)
 {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    std::shared_ptr<Automata> automata =
+        std::make_shared<Automata>("a+b*");
+
+    std::shared_ptr<Graph> NFA_graph = automata->build();
+
+    std::cout << "NFA GRAPH: " << std::endl;
+    std::cout << NFA_graph->to_string() << std::endl;
 }

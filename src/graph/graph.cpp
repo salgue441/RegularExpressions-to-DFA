@@ -10,6 +10,7 @@
  */
 // C++ Standard Libraries
 #include <stack>
+#include <sstream>
 
 // Project file
 #include "graph.h"
@@ -264,6 +265,41 @@ int Graph::create_vertex()
 
 /**
  * @brief
+ * Connects a graph to a vertex through an edge
+ * @param graph graph to be connected
+ * @param value value of the edge
+ * @return std::pair<int, int> origin and destination of the edge
+ */
+std::pair<int, int> Graph::connect_graph_to_vertex(
+    const std::shared_ptr<Graph> &graph, const int &value)
+{
+    int from = this->create_vertex();
+    int to = graph->get_start();
+
+    this->add_edge(from, value, to);
+
+    for (const int &final : graph->get_final())
+        this->add_final(final);
+
+    for (const auto &it : graph->get_edges())
+    {
+        const std::map<char, std::set<int>> &edges_map = it.second;
+
+        for (const auto &weight_it : edges_map)
+        {
+            const std::set<int> &destinations = weight_it.second;
+
+            for (const int &destination : destinations)
+                this->add_edge(it.first, weight_it.first,
+                               destination);
+        }
+    }
+
+    return std::make_pair(from, to);
+}
+
+/**
+ * @brief
  * Prints the graph in string format
  */
 std::string Graph::to_string() const
@@ -287,7 +323,8 @@ std::string Graph::to_string() const
             const std::set<int> &destinations = weight_it.second;
 
             for (const int &destination : destinations)
-                str += std::to_string(it.first) + " " + weight_it.first + " " + std::to_string(destination) + "\n";
+                str += std::to_string(it.first) + " " + weight_it.first +
+                       " " + std::to_string(destination) + "\n";
         }
     }
 

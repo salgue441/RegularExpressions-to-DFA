@@ -75,6 +75,10 @@
     "random": "cpp",
     "string_view": "cpp",
     "numbers": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "any": "cpp",
+    "set": "cpp",
+    "iomanip": "cpp",
+    "variant": "cpp"
   }
 }
